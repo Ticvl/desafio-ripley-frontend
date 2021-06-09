@@ -1,0 +1,27 @@
+<div class="container pt-5">
+    <div class="row">
+        <div class="col-xs-12" *ngIf="transferencias && transferencias?.length > 0">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <th>Nombre Destinatario</th>
+                    <th>RUT</th>
+                    <th>Banco</th>
+                    <th>Tipo de Cuenta</th>
+                    <th>Monto</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of transferencias">
+                        <td>{{ item.destinatario.nombre }}</td>
+                        <td>{{ item.destinatario.rut | rutFormatPipe }}</td>
+                        <td>{{ item.destinatario.bancoDestino }}</td>
+                        <td>{{ item.destinatario.tipoCuenta }}</td>
+                        <td>{{ item.monto | montoFormatPipe }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12" *ngIf="!transferencias">
+            <app-alerta [mensaje]="alerta.mensaje" [tipo]="alerta.tipo"></app-alerta>
+        </div>
+    </div>
+</div>
