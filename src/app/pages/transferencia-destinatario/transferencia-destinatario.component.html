@@ -84,6 +84,9 @@
                                 <small *ngIf="form.monto?.touched && form.monto.errors?.min" class="text-danger">
                                     Por favor ingrese un monto mayor a cero
                                 </small>
+                                <small *ngIf="form.monto.errors?.pattern" class="text-danger">
+                                    Por favor ingrese solo dígitos.
+                                </small>
                             </div>                
                         </div>
                 </div>

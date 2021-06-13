@@ -34,7 +34,7 @@ export class TransferenciaDestinatarioComponent implements OnInit, OnDestroy {
 
   crearFormulario() {
     this.formularioTransferencia = this.formBuilder.group({
-      monto: [{value: '', disabled: true},  [Validators.required, Validators.min(1)]]
+      monto: [{value: '', disabled: true},  [Validators.required, Validators.min(1), Validators.pattern('^[0-9]{1,3}(?:.[0-9]{1,3})*')]]
     });
   }
 
@@ -78,8 +78,13 @@ export class TransferenciaDestinatarioComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('destinatario ', this.destinatario);
-    let dataTransferencia = this.formularioTransferencia.value;
+    let monto = this.formularioTransferencia.get('monto').value;
+    let dataTransferencia = {
+      monto: '',
+      usuario: '',
+      destinatario: ''
+    };
+    dataTransferencia.monto = monto.replace('.', '');
     const { _id } = this.authService.getDecodeToken();
     dataTransferencia.usuario = _id;
     dataTransferencia.destinatario = this.destinatario._id;
@@ -88,11 +93,32 @@ export class TransferenciaDestinatarioComponent implements OnInit, OnDestroy {
         console.log(result);
         this.transferenciaEstado = true;
       }, (error) => {
+        console.log(error);
         this.errorGeneral = true;
       });
     this.subs.add(transferir);
+    this.ocultarAlert();
+    this.resetFormulario();
   }
 
+  resetFormulario() {
+    this.formularioEnviado = false;
+    this.formularioTransferencia.reset();
+    this.itemSeleccionado = false;
+    this.formularioTransferencia.get('monto').disable();
+    this.formularioTransferencia.get('monto').setValue('');
+    this.formularioTransferencia.get('monto').setErrors(null);
+    setTimeout(() => {
+      this.transferenciaEstado = false;
+    }, 3000);
+  }
+
+  ocultarAlert() {
+    setTimeout(() => {
+      this.errorGeneral = false;
+    }, 3000)
+  }
+  
   ngOnDestroy() {
     this.subs.unsubscribe();
   } 

@@ -19,7 +19,7 @@
                         <td>{{ item.destinatario.rut | rutFormatPipe }}</td>
                         <td>{{ item.destinatario.bancoDestino }}</td>
                         <td>{{ item.destinatario.tipoCuenta }}</td>
-                        <td>{{ item.monto | montoFormatPipe }}</td>
+                        <td>$ {{ item.monto | montoFormatPipe }}</td>
                     </tr>
                 </tbody>
             </table>

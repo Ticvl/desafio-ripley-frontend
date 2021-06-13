@@ -1,8 +1,7 @@
 .ul-list {
     display: block; 
     max-height: 150px;
-    overflow-y: scroll;
-    
+    overflow-y: scroll;    
 }
 
 .ul-list .li-list:hover {
