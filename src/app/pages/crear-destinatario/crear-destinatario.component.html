@@ -1,0 +1,116 @@
+<app-menu></app-menu>
+<div class="container pt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-xs-12 col-md-8">
+            <h3 class="pb-4">Nuevo destinatario</h3>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <form [formGroup]="formularioDestinatario">
+                <div class="row">
+                    <div class="col-lg-6">            
+                        <div class="form-group">
+                            <label>RUT</label>
+                            <input type="text" class="form-control" formControlName="rut" maxlength="12" value="rut" id="rutInput" rutFormatDirective [ngClass]="{'is-invalid': formularioEnviado && form.rut.errors }">
+                            <small *ngIf="formularioEnviado && form.rut.errors?.required" class="text-danger">
+                                Por favor ingrese un rut.
+                            </small>
+                            <small *ngIf="form.rut.errors?.rutValidator" class="text-danger">
+                                Ingrese un rut válido.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" class="form-control" formControlName="nombre" id="nombreInput" [ngClass]="{'is-invalid': formularioEnviado && form.nombre.errors }">
+                            <small *ngIf="formularioEnviado && form.nombre.errors?.required" class="text-danger">
+                                Por favor ingrese un nombre.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" class="form-control" formControlName="correo" id="correoInput" [ngClass]="{'is-invalid': formularioEnviado && form.correo.errors }">
+                            <small *ngIf="formularioEnviado && form.correo.errors?.required" class="text-danger">
+                                Por favor ingrese un correo
+                            </small>
+                            <small *ngIf="form.correo.errors?.pattern" class="text-danger">
+                                Por favor ingrese un correo válido.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control" formControlName="numeroTelefono" minlength="9" maxlength="9" id="telefonoInput" [ngClass]="{'is-invalid': formularioEnviado && form.numeroTelefono.errors }">
+                            <small *ngIf="formularioEnviado && form.numeroTelefono.errors?.required" class="text-danger">
+                                Por favor ingrese un número de teléfono
+                            </small>
+                            <small *ngIf="form.numeroTelefono?.touched && (form.numeroTelefono.errors?.minlength || form.numeroTelefono.errors?.maxlength)" class="text-danger">
+                                Debe contener 9 dígitos.
+                            </small>
+                            <small *ngIf="form.numeroTelefono?.touched && form.numeroTelefono.errors?.required " class="text-danger">
+                                Por favor ingrese un número de teléfono
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Banco</label>
+                            <select class="form-control" formControlName="bancoDestino" id="bancoSelect" [ngClass]="{'is-invalid': formularioEnviado && form.bancoDestino.errors }">
+                                <option selected>Seleccionar...</option>
+                                <option *ngFor="let banco of listadoBancos">{{ banco.name }}</option>
+                            </select>
+                            <small *ngIf="formularioEnviado && form.bancoDestino.errors?.required" class="text-danger">
+                                Por favor seleccione un banco.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Tipo de Cuenta</label>
+                            <select class="form-control" formControlName="tipoCuenta" id="tipoCuentaSelect" [ngClass]="{'is-invalid': formularioEnviado && form.tipoCuenta.errors }">
+                                <option selected>Seleccionar...</option>
+                                <option *ngFor="let cuenta of tipoCuenta">{{ cuenta }}</option>
+                            </select>
+                            <small *ngIf="formularioEnviado && form.tipoCuenta.errors?.required" class="text-danger">
+                                Por favor seleccione un tipo de cuenta.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>N° De Cuenta</label>
+                            <input type="number" class="form-control" formControlName="numeroCuenta" id="rutInput" [ngClass]="{'is-invalid': formularioEnviado && form.numeroCuenta.errors }">
+                            <small *ngIf="formularioEnviado && form.numeroCuenta.errors?.required" class="text-danger">
+                                Por favor ingrese un número de cuenta.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-5 d-flex justify-content-center">
+                    <div class="col-lg-6">
+                        <button type="button" class="btn btn-primary w-100" [disabled]="!formularioDestinatario.valid" (click)="guardarDestinatario()">Agregar Destinatario</button>
+                    </div>
+                </div>    
+            </form>
+        </div>
+
+        <div class="col-xs-12 col-md-8 pt-4">
+            <div class="alert alert-success" role="alert" *ngIf="destinatarioCreado">
+                Destinatario ha sido guardado exitosamente.
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="errorGeneral">
+                Ha ocurrido un error. Intente más tarde.
+            </div>
+        </div>
+    </div>
+
+</div>

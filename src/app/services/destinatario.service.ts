@@ -2,28 +2,27 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Destinatario } from '../domain/destinatario';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DestinatarioService {
 
-  URL_BANCO: string = "https://bast.dev/api/banks.php";
-  SERVER: string = "http://localhost:3000";
-  API_URL: string = this.SERVER + '/destinatario';
+  API_URL: string = environment.API_URL;
 
   constructor(private readonly httpClient: HttpClient) { }
 
   obtenerListadoBancos(): Observable<any> {
-    return this.httpClient.get(this.URL_BANCO);    
+    return this.httpClient.get(this.API_URL + '/banco/listado-bancos');    
   }
 
   guardarDestinatario(destinatario: Destinatario): Observable<any> {
-    return this.httpClient.post(this.API_URL + '/guardar', destinatario);
+    return this.httpClient.post(this.API_URL + '/destinatario/guardar', destinatario);
   }
 
-  obtenerDestinatarios(): Observable<any> {
-    return this.httpClient.get(this.API_URL + '/listado/' + '60bd81316e9ac5105c20c988');
+  obtenerDestinatarios(id_usuario: string): Observable<any> {
+    return this.httpClient.get(this.API_URL + '/destinatario/listado/' + id_usuario);
   }
 
 }

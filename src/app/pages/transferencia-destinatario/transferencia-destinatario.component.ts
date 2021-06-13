@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { DestinatarioService } from '../services/destinatario.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { TransferenciaService } from 'src/app/services/transferencia.service';
+import { DestinatarioService } from '../../services/destinatario.service';
 
 @Component({
   selector: 'app-transferencia-destinatario',
   templateUrl: './transferencia-destinatario.component.html',
   styleUrls: ['./transferencia-destinatario.component.css']
 })
-export class TransferenciaDestinatarioComponent implements OnInit {
+export class TransferenciaDestinatarioComponent implements OnInit, OnDestroy {
 
   formularioTransferencia: FormGroup;
   formularioEnviado: boolean = false;
@@ -18,9 +20,12 @@ export class TransferenciaDestinatarioComponent implements OnInit {
   itemSeleccionado: boolean = false;
   destinatario;
   datosValidos: boolean = false;
+  transferenciaEstado: boolean = false;
+  errorGeneral: boolean = false;
+
   private readonly subs = new Subscription();
 
-  constructor(private formBuilder: FormBuilder, private destinatarioService: DestinatarioService) { }
+  constructor(private formBuilder: FormBuilder, private destinatarioService: DestinatarioService, private authService: AuthService, private transferenciaService: TransferenciaService) { }
 
   ngOnInit(): void {
     this.crearFormulario();
@@ -38,12 +43,12 @@ export class TransferenciaDestinatarioComponent implements OnInit {
   }
 
   obtenerDestinatarios() {
-    const sub = this.destinatarioService.obtenerDestinatarios().subscribe(
+    const { _id } = this.authService.getDecodeToken();
+    const sub = this.destinatarioService.obtenerDestinatarios(_id).subscribe(
       (result) => {
-        console.log(result);
         this.listaDestinatario = result;
       }, (error) => {
-
+        console.log(error);
       }
     );
     this.subs.add(sub);
@@ -65,12 +70,31 @@ export class TransferenciaDestinatarioComponent implements OnInit {
   }
 
   transferir() {
-    console.log(this.formularioTransferencia.value);
     this.formularioEnviado = true;
     if(this.formularioTransferencia.invalid){
       return;
     }
-    console.log(this.formularioTransferencia.value);
+    if(!this.destinatario) {
+      return;
+    }
+
+    console.log('destinatario ', this.destinatario);
+    let dataTransferencia = this.formularioTransferencia.value;
+    const { _id } = this.authService.getDecodeToken();
+    dataTransferencia.usuario = _id;
+    dataTransferencia.destinatario = this.destinatario._id;
+    const transferir = this.transferenciaService.transferir(dataTransferencia).subscribe(
+      (result) => {
+        console.log(result);
+        this.transferenciaEstado = true;
+      }, (error) => {
+        this.errorGeneral = true;
+      });
+    this.subs.add(transferir);
   }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  } 
 
 }

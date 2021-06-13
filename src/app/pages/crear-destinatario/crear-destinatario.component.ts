@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { rutValidator } from '../common/validators/rut-format.validator';
-import { DestinatarioService } from '../services/destinatario.service';
+import { rutValidator } from '../../common/validators/rut-format.validator';
+import { AuthService } from '../../services/auth.service';
+import { DestinatarioService } from '../../services/destinatario.service';
 
 @Component({
   selector: 'app-crear-destinatario',
@@ -16,11 +17,12 @@ export class CrearDestinatarioComponent implements OnInit, OnDestroy {
   formularioEnviado: Boolean = false;
   listadoBancos: Array<string>;
   tipoCuenta: Array<string> = ["Cuenta Vista", "Cuenta Corriente"];
-  alerta = { mostrar: false, tipo: '', mensaje: ''};
+  errorGeneral: boolean = false;
+  destinatarioCreado: boolean = false;
 
   private readonly subs = new Subscription();
 
-  constructor(private formBuilder: FormBuilder, public destinatarioService: DestinatarioService) { }
+  constructor(private formBuilder: FormBuilder, private destinatarioService: DestinatarioService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.crearFormulario();
@@ -31,8 +33,8 @@ export class CrearDestinatarioComponent implements OnInit, OnDestroy {
     this.formularioDestinatario = this.formBuilder.group({
       nombre: ["", Validators.required],
       rut: ["", [Validators.required, rutValidator]],
-      correo: ["", [Validators.required, Validators.email]],
-      numeroTelefono: ["", Validators.required],
+      correo: ["", [Validators.required, Validators.pattern('^(?![.])(?!.*[-_.]$)[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+[.][a-zA-Z0-9-.]+$')]],
+      numeroTelefono: ["", [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
       bancoDestino: ["", Validators.required],
       tipoCuenta: ["", Validators.required],
       numeroCuenta: ["", Validators.required]
@@ -45,10 +47,10 @@ export class CrearDestinatarioComponent implements OnInit, OnDestroy {
 
   obtenerListadoBancos() {
     const sub = this.destinatarioService.obtenerListadoBancos().subscribe(
-      ( { banks } ) => {
-        this.listadoBancos = banks;
+      (result) => {
+        this.listadoBancos = result;
       }, ( error ) => {
-        console.log('Existe un error', error);
+        this.errorGeneral = true;
       }
     );
     this.subs.add(sub);
@@ -58,18 +60,20 @@ export class CrearDestinatarioComponent implements OnInit, OnDestroy {
     console.log('Guardando');
     this.formularioEnviado = true;
     if(this.formularioDestinatario.invalid){
-      alert('Invalido');
       return;
     }
-    console.log(JSON.stringify(this.formularioDestinatario.value));
-
-    const guardar = this.destinatarioService.guardarDestinatario(this.formularioDestinatario.value)
-    .subscribe((result) => {
-      console.log(result);
-    },
-    (error) => {
-      console.log('error');
-    });
+    let destinatario = this.formularioDestinatario.value;
+    const idDestinatario = this.authService.getDecodeToken();
+    destinatario.usuario = idDestinatario._id;
+    const guardar = this.destinatarioService.guardarDestinatario(destinatario)
+      .subscribe((result) => {
+        this.destinatarioCreado = true;
+      },
+      (error) => {
+        this.errorGeneral = true;
+      });
+    
+    this.subs.add(guardar);
    
   }
 
