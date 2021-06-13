@@ -10,8 +10,8 @@ import { RegistrarUsuarioComponent } from './pages/registrar-usuario/registrar-u
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'registrar-usuario', component: RegistrarUsuarioComponent },
-  { path: 'crear-destinatario', component: CrearDestinatarioComponent },
-  { path: 'historico-transferencia', component: HistoricoTransferenciaComponent},
+  { path: 'crear-destinatario', component: CrearDestinatarioComponent, canActivate: [ActivarRutaGuard] },
+  { path: 'historico-transferencia', component: HistoricoTransferenciaComponent, canActivate: [ActivarRutaGuard]},
   { path: 'transferencia', component: TransferenciaDestinatarioComponent, canActivate: [ActivarRutaGuard] }
 ];
 
