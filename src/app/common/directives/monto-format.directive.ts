@@ -12,11 +12,29 @@ export class MontoFormatDirective {
   //@HostListener('onchange')
   separatorMiles($event) {    
     let element = event.currentTarget as HTMLInputElement;
+ 
     let monto = element.value.split('.').join('');
-    var arrayMonto = monto.split('').reverse();
-    var multiplo = Math.ceil(arrayMonto.length/3);
-    console.log('3n - ' + multiplo);
-    console.log(JSON.stringify(arrayMonto.length));
+    let montoInverso = monto.split('').reverse();
+    
+    let resultado = [];
+    let aux = '';
+    let montoFinal;
+
+    var multiploTres = Math.ceil(montoInverso.length / 3);    
+
+    for(let i = 0; i < multiploTres; i++) {
+        for(let j = 0; j < 3; j++) {
+            if(montoInverso[j + (i*3)] != undefined) {
+                aux += montoInverso[j + (i*3)];
+            }
+        }
+        resultado.push(aux);
+        aux = '';
+       
+        montoFinal = resultado.join('.').split("").reverse().join('');
+    }
+
+    this.formControlName.control.setValue(montoFinal);
   }
 
 }
